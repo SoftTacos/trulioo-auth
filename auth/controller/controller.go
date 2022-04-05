@@ -87,11 +87,9 @@ func (c *authController) generateToken(ctx context.Context, user *v1.User) (toke
 
 func (c *authController) validateLogin(email, password string) (err error) {
 	if email == "" {
-		return errors.New("no uuid provided")
-	}
-	// TODO: check if UUID is a UUID
-	if password == "" {
-		return errors.New("no password provided")
+		err = errors.New("no email provided")
+	} else if password == "" {
+		err = errors.New("no password provided")
 	}
 	return
 }

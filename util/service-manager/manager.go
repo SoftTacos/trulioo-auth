@@ -78,21 +78,26 @@ func (m *ServiceManager) CreateClientConnection(url string) (connection *grpc.Cl
 func (m *ServiceManager) Start() {
 	var err error
 
-	err = m.ClientsSetup(m)
-	if err != nil {
-		log.Panic("failed to setup clients: ", err.Error())
+	if m.ClientsSetup != nil {
+		err = m.ClientsSetup(m)
+		if err != nil {
+			log.Panic("failed to setup clients: ", err.Error())
+		}
 	}
 
-	err = m.DatabaseSetup(m)
-	if err != nil {
-		log.Panic("failed to setup databases: ", err.Error())
+	if m.DatabaseSetup != nil {
+		err = m.DatabaseSetup(m)
+		if err != nil {
+			log.Panic("failed to setup databases: ", err.Error())
+		}
 	}
 
-	err = m.ServiceSetup(m)
-	if err != nil {
-		log.Panic("failed to setup service: ", err.Error())
+	if m.ServiceSetup != nil {
+		err = m.ServiceSetup(m)
+		if err != nil {
+			log.Panic("failed to setup service: ", err.Error())
+		}
 	}
-
 	for _, server := range m.servers {
 		server.Serve()
 	}

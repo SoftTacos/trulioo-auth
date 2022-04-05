@@ -1,17 +1,13 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"net"
 	"os"
 
 	v1 "github.com/softtacos/trulioo-auth/grpc/users/v1"
 	c "github.com/softtacos/trulioo-auth/users/controller"
 	d "github.com/softtacos/trulioo-auth/users/dao"
 	h "github.com/softtacos/trulioo-auth/users/handler"
-	"github.com/softtacos/trulioo-auth/util"
-	"google.golang.org/grpc"
+	sm "github.com/softtacos/trulioo-auth/util/service-manager"
 )
 
 const (
@@ -27,24 +23,27 @@ func init() {
 }
 
 func main() {
-	grpcPort := os.Getenv(grpcPortEnv)
+	var (
+		dao        d.UsersDao
+		controller c.UsersController
+		handler    *h.UsersHandler
+	)
 
-	db, err := util.CreateGoPgDB(os.Getenv(dbUrlEnv))
-	if err != nil {
-		log.Panic("error creating DB connection: ", err.Error())
+	karen := &sm.ServiceManager{
+		ServiceSetup: func(m *sm.ServiceManager) (err error) {
+			controller = c.NewUsersController(dao)
+			handler = h.NewUsersHandler(controller)
+			v1.RegisterUsersServiceServer(m.CreateGrpcServer(os.Getenv(grpcPortEnv)), handler)
+			return
+		},
+		DatabaseSetup: func(m *sm.ServiceManager) (err error) {
+			db := m.CreateDbConnection(os.Getenv(dbUrlEnv))
+			dao = d.NewUsersDao(db)
+			return
+		},
 	}
-	dao := d.NewUsersDao(db)
 
-	controller := c.NewUsersController(dao)
+	defer karen.Stop()
+	karen.Start()
 
-	grpcServer := grpc.NewServer()
-	grpcListener, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", grpcPort))
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-	handler := h.NewUsersHandler(controller)
-	v1.RegisterUsersServiceServer(grpcServer, handler)
-	grpcServer.Serve(grpcListener)
-
-	// TODO: add shutdown on interrupt
 }

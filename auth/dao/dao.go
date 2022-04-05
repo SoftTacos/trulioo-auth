@@ -7,27 +7,27 @@ import (
 	gopg "github.com/go-pg/pg/v10"
 )
 
-func NewDao(db *gopg.DB) Dao {
-	return &dao{
+func NewUsersDao(db *gopg.DB) UsersDao {
+	return &usersDao{
 		db: db,
 	}
 }
 
-type Dao interface {
+type UsersDao interface {
 	CreatePassword(uuid string, passwordHash string) (err error)
 	GetPassword(uuid string) (passwordHash string, err error)
 }
 
-type dao struct {
+type usersDao struct {
 	db *gopg.DB
 }
 
-func (d *dao) CreatePassword(uuid string, passwordHash string) (err error) {
+func (d *usersDao) CreatePassword(uuid string, passwordHash string) (err error) {
 	d.db.Model()
 	return
 }
 
-func (d *dao) GetPassword(uuid string) (passwordHash string, err error) {
+func (d *usersDao) GetPassword(uuid string) (passwordHash string, err error) {
 	rows, err := d.db.Model(&passwordHash).Query("SELECT password_hash FROM passwords WHERE user_uuid = ?", uuid)
 	if err != nil {
 		log.Println("failed to retrieve password: ", err)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log"
+	"regexp"
 	"time"
 
 	v1 "github.com/softtacos/trulioo-auth/grpc/users/v1"
@@ -15,6 +16,11 @@ import (
 )
 
 const maxEmailLength = 320
+
+var (
+	// this is simplified the real email regex is a terrifying monstrosity: https://stackoverflow.com/questions/201323/how-can-i-validate-an-email-address-using-a-regular-expression
+	emailRegex = regexp.MustCompile(`^[a-z0-9]*@[a-z0-9]*\.[a-z]*$`)
+)
 
 type UsersController interface {
 	GetUser(ctx context.Context, email string) (user m.User, err error)
@@ -70,6 +76,8 @@ func (c *usersController) validateUser(user m.User) (err error) {
 		err = errors.New("no email provided")
 	} else if len(user.Email) > maxEmailLength {
 		err = errors.New("email is longer than maximum email length of 320")
+	} else if !emailRegex.MatchString(user.Email) {
+		err = errors.New("invalid email")
 	}
 	return
 }
