@@ -2,15 +2,13 @@ package model
 
 import (
 	"time"
+
+	v1 "github.com/softtacos/trulioo-auth/grpc/users/v1"
 )
 
 type User struct {
-	UUID      string
-	Email     string
+	*v1.User
 	CreatedAt *time.Time
 	UpdatedAt *time.Time
 	DeletedAt *time.Time
-	// PhoneNumber string
-	// FirstName   string
-	// LastName    string
 }

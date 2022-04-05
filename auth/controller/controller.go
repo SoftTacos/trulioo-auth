@@ -31,7 +31,7 @@ func NewAuthController(dao d.Dao, usersClient v1.UsersServiceClient) AuthControl
 
 type AuthController interface {
 	CreateAccount(ctx context.Context, email, password string) (jwt string, err error)
-	Login(ctx context.Context, uuid, password string) (jwt string, err error)
+	Login(ctx context.Context, email, password string) (jwt string, err error)
 }
 
 type authController struct {
@@ -42,9 +42,9 @@ type authController struct {
 	hmacSecret  []byte
 }
 
-func (c *authController) Login(ctx context.Context, uuid, password string) (jwt string, err error) {
+func (c *authController) Login(ctx context.Context, email, password string) (jwt string, err error) {
 	// validate the uuid and password
-	if err = c.validateLogin(uuid, password); err != nil {
+	if err = c.validateLogin(email, password); err != nil {
 		log.Println("invalid request: ", err.Error())
 		return
 	}
@@ -52,7 +52,7 @@ func (c *authController) Login(ctx context.Context, uuid, password string) (jwt 
 	// check if the user exists
 	var getUserResponse *v1.GetUserResponse
 	getUserResponse, err = c.usersClient.GetUser(ctx, &v1.GetUserRequest{
-		Uuid: uuid,
+		Email: email,
 	})
 	if err != nil {
 		log.Println("failed to retrieve user: ", err.Error())
@@ -85,10 +85,11 @@ func (c *authController) generateToken(ctx context.Context, user *v1.User) (toke
 	return
 }
 
-func (c *authController) validateLogin(uuid, password string) (err error) {
-	if uuid == "" {
+func (c *authController) validateLogin(email, password string) (err error) {
+	if email == "" {
 		return errors.New("no uuid provided")
 	}
+	// TODO: check if UUID is a UUID
 	if password == "" {
 		return errors.New("no password provided")
 	}

@@ -59,17 +59,6 @@
           }
         }
       }
-    },
-    "usersUser": {
-      "type": "object",
-      "properties": {
-        "uuid": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        }
-      }
     }
   }
 }

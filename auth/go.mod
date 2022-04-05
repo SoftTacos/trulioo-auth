@@ -4,10 +4,14 @@ go 1.17
 
 replace github.com/softtacos/trulioo-auth/grpc => ../grpc
 
+replace github.com/softtacos/trulioo-auth/util => ../util
+
 require (
 	github.com/go-pg/pg/v10 v10.10.6
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/softtacos/trulioo-auth/grpc v0.0.0-00010101000000-000000000000
+	github.com/softtacos/trulioo-auth/util v0.0.0-00010101000000-000000000000
+	google.golang.org/grpc v1.45.0
 )
 
 require (
@@ -27,7 +31,6 @@ require (
 	golang.org/x/sys v0.0.0-20210923061019-b8560ed6a9b7 // indirect
 	golang.org/x/text v0.3.3 // indirect
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
-	google.golang.org/grpc v1.45.0 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 	mellium.im/sasl v0.2.1 // indirect
 )

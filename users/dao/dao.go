@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	gopg "github.com/go-pg/pg"
+	gopg "github.com/go-pg/pg/v10"
 	m "github.com/softtacos/trulioo-auth/users/model"
 )
 

@@ -26,7 +26,7 @@ type User struct {
 	unknownFields protoimpl.UnknownFields
 
 	Uuid  string `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid" pg:"uuid" bun:"uuid" yaml:"uuid" csv:"uuid"`
-	Email string `protobuf:"bytes,2,opt,name=email,proto3" json:"email" pg:"email" bun:"email" yaml:"email" csv:"email"`
+	Email string `protobuf:"bytes,2,opt,name=email,proto3" json:"email" bun:"email" yaml:"email" csv:"email" pg:"email"`
 }
 
 func (x *User) Reset() {
@@ -80,7 +80,7 @@ type CreateUserRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Email string `protobuf:"bytes,1,opt,name=email,proto3" json:"email" pg:"email" bun:"email" yaml:"email" csv:"email"`
+	Email string `protobuf:"bytes,1,opt,name=email,proto3" json:"email" yaml:"email" csv:"email" pg:"email" bun:"email"`
 }
 
 func (x *CreateUserRequest) Reset() {
@@ -127,7 +127,7 @@ type CreateUserResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	User *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user" pg:"user" bun:"user" yaml:"user" csv:"user"`
+	User *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user" csv:"user" pg:"user" bun:"user" yaml:"user"`
 }
 
 func (x *CreateUserResponse) Reset() {
@@ -174,7 +174,7 @@ type GetUserRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Email string `protobuf:"bytes,1,opt,name=email,proto3" json:"email" pg:"email" bun:"email" yaml:"email" csv:"email"`
+	Email string `protobuf:"bytes,1,opt,name=email,proto3" json:"email" yaml:"email" csv:"email" pg:"email" bun:"email"`
 }
 
 func (x *GetUserRequest) Reset() {
@@ -221,7 +221,7 @@ type GetUserResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	User *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user" pg:"user" bun:"user" yaml:"user" csv:"user"`
+	User *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user" csv:"user" pg:"user" bun:"user" yaml:"user"`
 }
 
 func (x *GetUserResponse) Reset() {
@@ -291,11 +291,11 @@ var file_users_v1_users_proto_rawDesc = []byte{
 	0x65, 0x12, 0x38, 0x0a, 0x07, 0x47, 0x65, 0x74, 0x55, 0x73, 0x65, 0x72, 0x12, 0x15, 0x2e, 0x75,
 	0x73, 0x65, 0x72, 0x73, 0x2e, 0x47, 0x65, 0x74, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75,
 	0x65, 0x73, 0x74, 0x1a, 0x16, 0x2e, 0x75, 0x73, 0x65, 0x72, 0x73, 0x2e, 0x47, 0x65, 0x74, 0x55,
-	0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x2c, 0x5a, 0x2a, 0x67,
+	0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x31, 0x5a, 0x2f, 0x67,
 	0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x73, 0x6f, 0x66, 0x74, 0x74, 0x61,
 	0x63, 0x6f, 0x73, 0x2f, 0x74, 0x72, 0x75, 0x6c, 0x69, 0x6f, 0x6f, 0x2d, 0x61, 0x75, 0x74, 0x68,
-	0x2f, 0x75, 0x73, 0x65, 0x72, 0x73, 0x2f, 0x76, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+	0x2f, 0x67, 0x72, 0x70, 0x63, 0x2f, 0x75, 0x73, 0x65, 0x72, 0x73, 0x2f, 0x76, 0x31, 0x62, 0x06,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

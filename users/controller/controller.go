@@ -6,6 +6,8 @@ import (
 	"log"
 	"time"
 
+	v1 "github.com/softtacos/trulioo-auth/grpc/users/v1"
+
 	//v1 "github.com/softtacos/trulioo-auth/grpc/users"
 	"github.com/google/uuid"
 	d "github.com/softtacos/trulioo-auth/users/dao"
@@ -54,8 +56,10 @@ func (c *usersController) CreateUser(ctx context.Context, email string) (user m.
 }
 
 func (c *usersController) generateUser(email string) (user m.User) {
-	user.UUID = uuid.New().String()
-	user.Email = email
+	user.User = &v1.User{
+		Uuid:  uuid.New().String(),
+		Email: email,
+	}
 	now := time.Now().UTC()
 	user.CreatedAt = &now
 	return
