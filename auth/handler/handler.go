@@ -32,7 +32,7 @@ func (h *AuthHandler) Login(ctx context.Context, request *v1.LoginRequest) (resp
 }
 
 func (h *AuthHandler) Signup(ctx context.Context, request *v1.SignupRequest) (response *v1.SignupResponse, err error) {
-	jawt, err := h.controller.Login(ctx, request.Email, request.Password)
+	jawt, err := h.controller.CreateAccount(ctx, request.Email, request.Password)
 	if err != nil {
 		log.Println(err)
 		return

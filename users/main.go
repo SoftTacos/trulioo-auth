@@ -30,16 +30,14 @@ func main() {
 	)
 
 	karen := &sm.ServiceManager{
-		ServiceSetup: func(m *sm.ServiceManager) (err error) {
+		ServiceSetup: func(m *sm.ServiceManager) {
 			controller = c.NewUsersController(dao)
 			handler = h.NewUsersHandler(controller)
 			v1.RegisterUsersServiceServer(m.CreateGrpcServer(os.Getenv(grpcPortEnv)), handler)
-			return
 		},
-		DatabaseSetup: func(m *sm.ServiceManager) (err error) {
+		DatabaseSetup: func(m *sm.ServiceManager) {
 			db := m.CreateDbConnection(os.Getenv(dbUrlEnv))
 			dao = d.NewUsersDao(db)
-			return
 		},
 	}
 

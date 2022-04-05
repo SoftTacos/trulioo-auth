@@ -30,9 +30,9 @@ func (s *grpcServer) Stop() {
 }
 
 type ServiceManager struct {
-	ServiceSetup  func(m *ServiceManager) error
-	ClientsSetup  func(m *ServiceManager) error
-	DatabaseSetup func(m *ServiceManager) error
+	ServiceSetup  func(m *ServiceManager)
+	ClientsSetup  func(m *ServiceManager)
+	DatabaseSetup func(m *ServiceManager)
 
 	servers           []*grpcServer
 	dbConnections     []*gopg.DB
@@ -76,27 +76,16 @@ func (m *ServiceManager) CreateClientConnection(url string) (connection *grpc.Cl
 }
 
 func (m *ServiceManager) Start() {
-	var err error
-
 	if m.ClientsSetup != nil {
-		err = m.ClientsSetup(m)
-		if err != nil {
-			log.Panic("failed to setup clients: ", err.Error())
-		}
+		m.ClientsSetup(m)
 	}
 
 	if m.DatabaseSetup != nil {
-		err = m.DatabaseSetup(m)
-		if err != nil {
-			log.Panic("failed to setup databases: ", err.Error())
-		}
+		m.DatabaseSetup(m)
 	}
 
 	if m.ServiceSetup != nil {
-		err = m.ServiceSetup(m)
-		if err != nil {
-			log.Panic("failed to setup service: ", err.Error())
-		}
+		m.ServiceSetup(m)
 	}
 	for _, server := range m.servers {
 		server.Serve()

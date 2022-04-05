@@ -26,7 +26,7 @@ type LoginRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Email    string `protobuf:"bytes,1,opt,name=email,proto3" json:"email" bun:"email" yaml:"email" csv:"email" pg:"email"`
+	Email    string `protobuf:"bytes,1,opt,name=email,proto3" json:"email" csv:"email" pg:"email" bun:"email" yaml:"email"`
 	Password string `protobuf:"bytes,2,opt,name=password,proto3" json:"password" pg:"password" bun:"password" yaml:"password" csv:"password"`
 }
 
@@ -81,7 +81,7 @@ type LoginResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Jwt string `protobuf:"bytes,1,opt,name=jwt,proto3" json:"jwt" pg:"jwt" bun:"jwt" yaml:"jwt" csv:"jwt"`
+	Jwt string `protobuf:"bytes,1,opt,name=jwt,proto3" json:"jwt" yaml:"jwt" csv:"jwt" pg:"jwt" bun:"jwt"`
 }
 
 func (x *LoginResponse) Reset() {
@@ -129,7 +129,7 @@ type SignupRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	Email    string `protobuf:"bytes,1,opt,name=email,proto3" json:"email" pg:"email" bun:"email" yaml:"email" csv:"email"`
-	Password string `protobuf:"bytes,2,opt,name=password,proto3" json:"password" yaml:"password" csv:"password" pg:"password" bun:"password"`
+	Password string `protobuf:"bytes,2,opt,name=password,proto3" json:"password" pg:"password" bun:"password" yaml:"password" csv:"password"`
 }
 
 func (x *SignupRequest) Reset() {
@@ -183,7 +183,7 @@ type SignupResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Jwt string `protobuf:"bytes,1,opt,name=jwt,proto3" json:"jwt" pg:"jwt" bun:"jwt" yaml:"jwt" csv:"jwt"`
+	Jwt string `protobuf:"bytes,1,opt,name=jwt,proto3" json:"jwt" csv:"jwt" pg:"jwt" bun:"jwt" yaml:"jwt"`
 }
 
 func (x *SignupResponse) Reset() {

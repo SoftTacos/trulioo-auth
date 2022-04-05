@@ -80,7 +80,7 @@ type CreateUserRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Email string `protobuf:"bytes,1,opt,name=email,proto3" json:"email" yaml:"email" csv:"email" pg:"email" bun:"email"`
+	Email string `protobuf:"bytes,1,opt,name=email,proto3" json:"email" csv:"email" pg:"email" bun:"email" yaml:"email"`
 }
 
 func (x *CreateUserRequest) Reset() {
@@ -127,7 +127,7 @@ type CreateUserResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	User *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user" csv:"user" pg:"user" bun:"user" yaml:"user"`
+	User *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user" pg:"user" bun:"user" yaml:"user" csv:"user"`
 }
 
 func (x *CreateUserResponse) Reset() {
@@ -174,7 +174,7 @@ type GetUserRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Email string `protobuf:"bytes,1,opt,name=email,proto3" json:"email" yaml:"email" csv:"email" pg:"email" bun:"email"`
+	Email string `protobuf:"bytes,1,opt,name=email,proto3" json:"email" bun:"email" yaml:"email" csv:"email" pg:"email"`
 }
 
 func (x *GetUserRequest) Reset() {
@@ -221,7 +221,7 @@ type GetUserResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	User *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user" csv:"user" pg:"user" bun:"user" yaml:"user"`
+	User *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user" pg:"user" bun:"user" yaml:"user" csv:"user"`
 }
 
 func (x *GetUserResponse) Reset() {

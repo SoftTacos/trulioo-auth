@@ -34,21 +34,18 @@ func main() {
 	)
 
 	karen := &sm.ServiceManager{
-		ClientsSetup: func(m *sm.ServiceManager) (err error) {
+		ClientsSetup: func(m *sm.ServiceManager) {
 			usersClientConn := m.CreateClientConnection(os.Getenv(usersUrlEnv))
 			usersClient = uv1.NewUsersServiceClient(usersClientConn)
-			return
 		},
-		ServiceSetup: func(m *sm.ServiceManager) (err error) {
+		ServiceSetup: func(m *sm.ServiceManager) {
 			controller = c.NewAuthController(dao, usersClient)
 			handler = h.NewAuthHandler(controller)
 			v1.RegisterAuthServiceServer(m.CreateGrpcServer(os.Getenv(grpcPortEnv)), handler)
-			return
 		},
-		DatabaseSetup: func(m *sm.ServiceManager) (err error) {
+		DatabaseSetup: func(m *sm.ServiceManager) {
 			db := m.CreateDbConnection(os.Getenv(dbUrlEnv))
 			dao = d.NewAuthDao(db)
-			return
 		},
 	}
 

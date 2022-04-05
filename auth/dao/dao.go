@@ -1,8 +1,11 @@
 package dao
 
+//go:generate mockgen -package controller -destination mocks/mock_AuthDao.go . AuthDao
+
 import (
 	"errors"
 	"log"
+	"time"
 
 	gopg "github.com/go-pg/pg/v10"
 )
@@ -23,7 +26,17 @@ type authDao struct {
 }
 
 func (d *authDao) CreatePassword(uuid string, passwordHash string) (err error) {
-	d.db.Model()
+	now := time.Now()
+	pw := password{
+		UserUuid:     uuid,
+		PasswordHash: passwordHash,
+		CreatedAt:    &now,
+	}
+
+	_, err = d.db.Model(&pw).Insert()
+	if err != nil {
+		log.Println("failed to create password: ", err)
+	}
 	return
 }
 
@@ -41,4 +54,11 @@ func (d *authDao) GetPassword(uuid string) (passwordHash string, err error) {
 	}
 
 	return
+}
+
+type password struct {
+	UserUuid     string
+	PasswordHash string
+	CreatedAt    *time.Time
+	DeletedAt    *time.Time
 }
