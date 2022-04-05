@@ -7,7 +7,8 @@ import (
 	"time"
 
 	jwt "github.com/golang-jwt/jwt"
-	v1 "github.com/softtacos/trulioo-auth/grpc/users"
+	d "github.com/softtacos/trulioo-auth/auth/dao"
+	v1 "github.com/softtacos/trulioo-auth/grpc/users/v1"
 )
 
 const (
@@ -18,25 +19,28 @@ var (
 	defaultHMACSecret = []byte("")
 )
 
-func NewAuthController(usersClient v1.UsersServiceClient) AuthController {
+func NewAuthController(dao d.Dao, usersClient v1.UsersServiceClient) AuthController {
 	return &authController{
+		dao:         dao,
 		usersClient: usersClient,
+
 		jwtDuration: defaultJwtDuration,
 	}
 }
 
 type AuthController interface {
 	CreateAccount(ctx context.Context, email, password string) (jwt string, err error)
-	GenerateToken(ctx context.Context, uuid, password string) (jwt string, err error)
+	Login(ctx context.Context, uuid, password string) (jwt string, err error)
 }
 
 type authController struct {
+	dao         d.Dao
 	usersClient v1.UsersServiceClient
 
 	jwtDuration time.Duration
 }
 
-func (c *authController) GenerateToken(ctx context.Context, uuid, password string) (jwt string, err error) {
+func (c *authController) Login(ctx context.Context, uuid, password string) (jwt string, err error) {
 	// validate the uuid and password
 	if err = c.validateLogin(uuid, password); err != nil {
 		log.Println("invalid request: ", err.Error())
@@ -94,12 +98,16 @@ func (c *authController) CreateAccount(ctx context.Context, email, password stri
 		log.Println("invalid request: ", err.Error())
 		return
 	}
-
-	c.usersClient.CreateUser(ctx, &v1.CreateUserRequest{
+	var createUserResponse *v1.CreateUserResponse
+	createUserResponse, err = c.usersClient.CreateUser(ctx, &v1.CreateUserRequest{
 		Email: email,
 	})
+	if err != nil {
+		log.Println("failed to create user: ", err.Error())
+		return
+	}
 
-	jwt, err = c.generateToken(ctx, uuid, password)
+	jwt, err = c.generateToken(ctx, createUserResponse.GetUser())
 	if err != nil {
 		return
 	}

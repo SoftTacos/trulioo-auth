@@ -4,6 +4,8 @@ package auth;
 
 option go_package = "github.com/softtacos/trulioo-auth/auth/v1";
 
+import "users/v1/users.proto";
+
 service AuthService {
   rpc Login(LoginRequest) returns (LoginResponse);
   rpc Signup(SignupRequest) returns (SignupResponse);
@@ -19,7 +21,7 @@ message LoginResponse {
 }
 
 message SignupRequest {
-  string email = 1;
+  
   string password = 2;
 }
 
