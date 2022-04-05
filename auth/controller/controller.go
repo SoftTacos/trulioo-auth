@@ -19,7 +19,7 @@ var (
 	defaultHMACSecret = []byte("shhhhh it's a secret")
 )
 
-func NewAuthController(dao d.Dao, usersClient v1.UsersServiceClient) AuthController {
+func NewAuthController(dao d.UsersDao, usersClient v1.UsersServiceClient) AuthController {
 	return &authController{
 		dao:         dao,
 		usersClient: usersClient,
@@ -35,7 +35,7 @@ type AuthController interface {
 }
 
 type authController struct {
-	dao         d.Dao
+	dao         d.UsersDao
 	usersClient v1.UsersServiceClient
 
 	jwtDuration time.Duration
