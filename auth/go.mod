@@ -10,6 +10,7 @@ require (
 	github.com/go-pg/pg/v10 v10.10.6
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang/mock v1.6.0
+	github.com/google/uuid v1.1.2
 	github.com/softtacos/trulioo-auth/grpc v0.0.0-00010101000000-000000000000
 	github.com/softtacos/trulioo-auth/util v0.0.0-00010101000000-000000000000
 	github.com/stretchr/testify v1.7.0

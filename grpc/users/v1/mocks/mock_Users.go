@@ -6,8 +6,9 @@ package mocks
 
 import (
 	context "context"
-	v1 "grpc/users/v1"
 	reflect "reflect"
+
+	v1 "github.com/softtacos/trulioo-auth/grpc/users/v1"
 
 	gomock "github.com/golang/mock/gomock"
 	grpc "google.golang.org/grpc"

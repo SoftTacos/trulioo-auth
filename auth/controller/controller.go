@@ -28,6 +28,7 @@ func NewAuthController(dao d.AuthDao, usersClient v1.UsersServiceClient) AuthCon
 		dao:         dao,
 		usersClient: usersClient,
 
+		pwHasher:    pwHasher{},
 		jwtDuration: defaultJwtDuration,
 		hmacSecret:  defaultHMACSecret,
 	}
@@ -42,6 +43,7 @@ type authController struct {
 	dao         d.AuthDao
 	usersClient v1.UsersServiceClient
 
+	pwHasher    PasswordHasher // mocked the call to hash password for testability
 	jwtDuration time.Duration
 	hmacSecret  []byte
 }
@@ -107,7 +109,7 @@ func (c *authController) createAccount(ctx context.Context, email, password stri
 	user = createUserResponse.User
 
 	// GenerateFromPassword hashes and salts the password
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
+	hash, err := c.pwHasher.HashAndSalt([]byte(password), bcrypt.MinCost)
 	if err != nil {
 		log.Println(err)
 		return
