@@ -4,8 +4,6 @@ go 1.17
 
 replace github.com/softtacos/trulioo-auth/grpc => ../grpc
 
-replace github.com/softtacos/trulioo-auth/users => ../users
-
 replace github.com/softtacos/trulioo-auth/util => ../util
 
 require (

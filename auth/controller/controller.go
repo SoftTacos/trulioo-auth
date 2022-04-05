@@ -106,6 +106,7 @@ func (c *authController) createAccount(ctx context.Context, email, password stri
 	}
 	user = createUserResponse.User
 
+	// GenerateFromPassword hashes and salts the password
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
 	if err != nil {
 		log.Println(err)
