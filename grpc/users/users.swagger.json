@@ -52,14 +52,11 @@
         }
       }
     },
-    "usersGetUsersResponse": {
+    "usersGetUserResponse": {
       "type": "object",
       "properties": {
-        "users": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/usersUser"
-          }
+        "user": {
+          "$ref": "#/definitions/usersUser"
         }
       }
     },

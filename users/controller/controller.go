@@ -4,8 +4,9 @@ import (
 	"context"
 	"log"
 
+
 	auth "github.com/softtacos/trulioo-auth/grpc/auth"
-	v1 "github.com/softtacos/trulioo-auth/grpc/users"
+	//v1 "github.com/softtacos/trulioo-auth/grpc/users"
 	d "github.com/softtacos/trulioo-auth/users/dao"
 )
 

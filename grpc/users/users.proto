@@ -6,7 +6,7 @@ option go_package = "github.com/softtacos/trulioo-auth/users/v1";
 
 service UsersService {
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
-  rpc GetUsers(GetUsersRequest) returns (GetUsersResponse);
+  rpc GetUser(GetUserRequest) returns (GetUserResponse);
 }
 
 message User {
@@ -23,10 +23,10 @@ message CreateUserResponse {
   User user = 1;
 }
 
-message GetUsersRequest {
-  repeated string uuids = 1;
+message GetUserRequest {
+  string uuid = 1;
 }
 
-message GetUsersResponse {
-  repeated User users = 1;
+message GetUserResponse {
+  User user = 1;
 }

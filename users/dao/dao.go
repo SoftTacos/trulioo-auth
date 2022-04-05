@@ -1,10 +1,11 @@
 package dao
 
-import(
+import (
 	"context"
 
-	m "github.com/softtacos/trulioo-auth/users/model"
+	gopg "github.com/go-pg/pg"
 	v1 "github.com/softtacos/trulioo-auth/grpc/users"
+	m "github.com/softtacos/trulioo-auth/users/model"
 )
 
 type UsersDao interface {
