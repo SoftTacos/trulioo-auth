@@ -19,7 +19,7 @@ var (
 	defaultHMACSecret = []byte("shhhhh it's a secret")
 )
 
-func NewAuthController(dao d.UsersDao, usersClient v1.UsersServiceClient) AuthController {
+func NewAuthController(dao d.AuthDao, usersClient v1.UsersServiceClient) AuthController {
 	return &authController{
 		dao:         dao,
 		usersClient: usersClient,

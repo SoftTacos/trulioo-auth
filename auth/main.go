@@ -28,7 +28,7 @@ func init() {
 func main() {
 	var (
 		usersClient uv1.UsersServiceClient
-		dao         d.UsersDao
+		dao         d.AuthDao
 		controller  c.AuthController
 		handler     *h.AuthHandler
 	)
@@ -47,7 +47,7 @@ func main() {
 		},
 		DatabaseSetup: func(m *sm.ServiceManager) (err error) {
 			db := m.CreateDbConnection(os.Getenv(dbUrlEnv))
-			dao = d.NewUsersDao(db)
+			dao = d.NewAuthDao(db)
 			return
 		},
 	}
