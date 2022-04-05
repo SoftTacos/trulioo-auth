@@ -1,4 +1,4 @@
-package util
+package service_manager
 
 import (
 	"time"
@@ -6,7 +6,7 @@ import (
 	gopg "github.com/go-pg/pg/v10"
 )
 
-func CreateGoPgDB(url string) (*gopg.DB, error) {
+func createGoPgDB(url string) (*gopg.DB, error) {
 	options, err := gopg.ParseURL(url)
 	if err != nil {
 		return nil, err

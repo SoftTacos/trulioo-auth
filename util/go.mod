@@ -4,12 +4,12 @@ go 1.17
 
 require (
 	github.com/go-pg/pg/v10 v10.10.6
-	google.golang.org/grpc v1.27.0
+	google.golang.org/grpc v1.45.0
 )
 
 require (
 	github.com/go-pg/zerochecker v0.2.0 // indirect
-	github.com/golang/protobuf v1.4.3 // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
 	github.com/vmihailenco/bufpool v0.1.11 // indirect
@@ -21,6 +21,6 @@ require (
 	golang.org/x/sys v0.0.0-20210923061019-b8560ed6a9b7 // indirect
 	golang.org/x/text v0.3.3 // indirect
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
-	google.golang.org/protobuf v1.25.0 // indirect
+	google.golang.org/protobuf v1.26.0 // indirect
 	mellium.im/sasl v0.2.1 // indirect
 )

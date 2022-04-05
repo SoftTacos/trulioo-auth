@@ -1,15 +1,18 @@
 package service_manager
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	gopg "github.com/go-pg/pg/v10"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type grpcServer struct {
@@ -51,7 +54,7 @@ func (m *ServiceManager) CreateGrpcServer(port string) (server *grpc.Server) {
 
 func (m *ServiceManager) CreateDbConnection(url string) (db *gopg.DB) {
 	var err error
-	db, err = CreateGoPgDB(os.Getenv(dbUrlEnv))
+	db, err = createGoPgDB(url)
 	if err != nil {
 		log.Panic("error creating DB: ", err)
 		return
@@ -62,7 +65,7 @@ func (m *ServiceManager) CreateDbConnection(url string) (db *gopg.DB) {
 
 func (m *ServiceManager) CreateClientConnection(url string) (connection *grpc.ClientConn) {
 	var err error
-	connection, err = clients.CreateRpcConnection(url)
+	connection, err = createRpcConnection(url)
 	if err != nil {
 		log.Panic("failed to connect to client: ", err.Error())
 		return
@@ -113,4 +116,31 @@ func (m *ServiceManager) Stop() {
 	for _, server := range m.servers {
 		server.Stop()
 	}
+}
+
+func createRpcConnection(target string) (connection *grpc.ClientConn, err error) {
+	log.Println("Creating RPC Client for " + target)
+	if err = validateUrl(target); err != nil {
+		return
+	}
+
+	connection, err = grpc.Dial(
+		target,
+		// IRL we would want to use secure gRPC OR have the REST authentication be https.
+		// I'm assuming that the request has gone through some sort of gateway into the cluster and is safe
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithDefaultCallOptions(),
+	)
+	if err != nil {
+		log.Println("could not connect to gRPC client: ", err)
+	}
+	return
+}
+
+func validateUrl(url string) (err error) {
+	if !strings.Contains(url, ":") {
+		return errors.New("URL does not have a port")
+	}
+
+	return
 }

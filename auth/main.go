@@ -26,7 +26,6 @@ func init() {
 }
 
 func main() {
-
 	var (
 		usersClient uv1.UsersServiceClient
 		dao         d.Dao
