@@ -66,9 +66,8 @@
     "usersUser": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "string",
-          "format": "uint64"
+        "uuid": {
+          "type": "string"
         },
         "email": {
           "type": "string"

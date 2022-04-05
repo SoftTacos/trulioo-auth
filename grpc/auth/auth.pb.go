@@ -26,7 +26,7 @@ type LoginRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	Email    string `protobuf:"bytes,1,opt,name=email,proto3" json:"email" bun:"email" yaml:"email" csv:"email" pg:"email"`
-	Password string `protobuf:"bytes,2,opt,name=password,proto3" json:"password" yaml:"password" csv:"password" pg:"password" bun:"password"`
+	Password string `protobuf:"bytes,2,opt,name=password,proto3" json:"password" pg:"password" bun:"password" yaml:"password" csv:"password"`
 }
 
 func (x *LoginRequest) Reset() {
@@ -80,7 +80,7 @@ type LoginResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Jwt string `protobuf:"bytes,1,opt,name=jwt,proto3" json:"jwt" pg:"jwt" bun:"jwt" yaml:"jwt" csv:"jwt"`
+	Jwt string `protobuf:"bytes,1,opt,name=jwt,proto3" json:"jwt" csv:"jwt" pg:"jwt" bun:"jwt" yaml:"jwt"`
 }
 
 func (x *LoginResponse) Reset() {

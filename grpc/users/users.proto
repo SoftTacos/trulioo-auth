@@ -10,7 +10,7 @@ service UsersService {
 }
 
 message User {
-  uint64 id = 1;
+  string uuid = 1;
   string email = 2;
 }
 
@@ -24,7 +24,7 @@ message CreateUserResponse {
 }
 
 message GetUsersRequest {
-  repeated uint64 ids = 1;
+  repeated string uuids = 1;
 }
 
 message GetUsersResponse {

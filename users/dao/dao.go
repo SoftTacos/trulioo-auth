@@ -4,9 +4,11 @@ import(
 	"context"
 
 	m "github.com/softtacos/trulioo-auth/users/model"
+	v1 "github.com/softtacos/trulioo-auth/grpc/users"
 )
+
 type UsersDao interface {
-	GetUsers(ctx context.Context, ids []uint64)(users []m.User,err error)
+	GetUsers(ctx context.Context,filters *v1.GetUsersRequest)(users []m.User,err error)
 	CreateUser(ctx context.Context, user m.User)(m.User, error)
 }
 
@@ -20,8 +22,10 @@ type usersDao struct {
 	db *gopg.DB
 }
 
-func (d *usersDao)GetUsers(ctx context.Context,ids []uint64)(users []m.User,err error){
+func (d *usersDao)GetUsers(ctx context.Context,filters *v1.GetUsersRequest)(users []m.User,err error){
+	if len(filters.Uuids) > 0 {
 
+	}
 	return
 }
 
