@@ -18,15 +18,16 @@ var (
 	defaultHMACSecret = []byte("")
 )
 
-func NewAuthController() AuthController {
+func NewAuthController(usersClient v1.UsersServiceClient) AuthController {
 	return &authController{
-		usersClient: nil,
+		usersClient: usersClient,
 		jwtDuration: defaultJwtDuration,
 	}
 }
 
 type AuthController interface {
-	GenerateToken(ctx context.Context, email, password string) (jwt string, err error)
+	CreateAccount(ctx context.Context, email, password string) (jwt string, err error)
+	GenerateToken(ctx context.Context, uuid, password string) (jwt string, err error)
 }
 
 type authController struct {
@@ -42,17 +43,6 @@ func (c *authController) GenerateToken(ctx context.Context, uuid, password strin
 		return
 	}
 
-	jwt, err = c.generateToken(ctx, uuid, password)
-	if err != nil {
-		return
-	}
-
-	// refresh?
-
-	return
-}
-
-func (c *authController) generateToken(ctx context.Context, uuid, password string) (tokenString string, err error) {
 	// check if the user exists
 	var getUserResponse *v1.GetUserResponse
 	getUserResponse, err = c.usersClient.GetUser(ctx, &v1.GetUserRequest{
@@ -63,10 +53,21 @@ func (c *authController) generateToken(ctx context.Context, uuid, password strin
 		return
 	}
 
+	jwt, err = c.generateToken(ctx, getUserResponse.GetUser())
+	if err != nil {
+		return
+	}
+
+	// refresh?
+
+	return
+}
+
+func (c *authController) generateToken(ctx context.Context, user *v1.User) (tokenString string, err error) {
 	// generate a new JWT
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"uuid": getUserResponse.User.Uuid,
-		"nbf":  time.Now().Add(c.jwtDuration).Unix(),
+		"uuid":      user.Uuid,
+		"expiresAt": time.Now().Add(c.jwtDuration).Unix(),
 	})
 
 	tokenString, err = token.SignedString(defaultHMACSecret)
@@ -81,6 +82,34 @@ func (c *authController) validateLogin(uuid, password string) (err error) {
 	if uuid == "" {
 		return errors.New("no uuid provided")
 	}
+	if password == "" {
+		return errors.New("no password provided")
+	}
+	return
+}
+
+func (c *authController) CreateAccount(ctx context.Context, email, password string) (jwt string, err error) {
+	// validate the uuid and password
+	if err = c.validatePassword(password); err != nil {
+		log.Println("invalid request: ", err.Error())
+		return
+	}
+
+	c.usersClient.CreateUser(ctx, &v1.CreateUserRequest{
+		Email: email,
+	})
+
+	jwt, err = c.generateToken(ctx, uuid, password)
+	if err != nil {
+		return
+	}
+
+	// refresh?
+
+	return
+}
+
+func (c *authController) validatePassword(password string) (err error) {
 	if password == "" {
 		return errors.New("no password provided")
 	}
