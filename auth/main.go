@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
+	"net"
 	"os"
 	"time"
 
@@ -13,17 +15,21 @@ import (
 	clients "github.com/softtacos/trulioo-auth/grpc"
 	v1 "github.com/softtacos/trulioo-auth/grpc/auth/v1"
 	uv1 "github.com/softtacos/trulioo-auth/grpc/users/v1"
+	"google.golang.org/grpc"
 )
 
 const (
 	usersUrlEnv = "USERS_CLIENT_ADDRESS"
 	dbUrlEnv    = "DB_URL"
+	grpcPortEnv = "GRPC_PORT"
 
 	defaultMaxPoolSize = 10
 )
 
 func main() {
-	os.Setenv("USERS_CLIENT_ADDRESS", ":11000")
+	os.Setenv("USERS_CLIENT_ADDRESS", ":11001")
+	os.Setenv("GRPC_PORT", "11001")
+	grpcPort := os.Getenv(grpcPortEnv)
 
 	var db *gopg.DB
 	db = createGoPgDB(dbUrlEnv)
@@ -36,8 +42,15 @@ func main() {
 	controller := c.NewAuthController(dao, usersClient)
 	controller.Login(context.Background(), "", "")
 
+	grpcServer := grpc.NewServer()
+	grpcListener, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", grpcPort))
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
 	handler := h.NewAuthHandler(controller)
-	v1.RegisterAuthServiceServer(nil, handler)
+	v1.RegisterAuthServiceServer(grpcServer, handler)
+	grpcServer.Serve(grpcListener)
+	grpcServer.GracefulStop()
 	// TODO: add shutdown on interrupt
 }
 

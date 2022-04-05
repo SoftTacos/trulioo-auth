@@ -15,6 +15,7 @@ func NewAuthHandler(controller c.AuthController) *AuthHandler {
 }
 
 type AuthHandler struct {
+	v1.UnimplementedAuthServiceServer
 	controller c.AuthController
 }
 
@@ -25,6 +26,18 @@ func (h *AuthHandler) Login(ctx context.Context, request *v1.LoginRequest) (resp
 		return
 	}
 	response = &v1.LoginResponse{
+		Jwt: jawt,
+	}
+	return
+}
+
+func (h *AuthHandler) Signup(ctx context.Context, request *v1.SignupRequest) (response *v1.SignupResponse, err error) {
+	jawt, err := h.controller.Login(ctx, request.Email, request.Password)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	response = &v1.SignupResponse{
 		Jwt: jawt,
 	}
 	return
