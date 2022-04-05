@@ -23,7 +23,7 @@ message CreateUserResponse {
 }
 
 message GetUserRequest {
-  string uuid = 1;
+  string email = 1;
 }
 
 message GetUserResponse {

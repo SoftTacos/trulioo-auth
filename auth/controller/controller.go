@@ -16,7 +16,7 @@ const (
 )
 
 var (
-	defaultHMACSecret = []byte("")
+	defaultHMACSecret = []byte("shhhhh it's a secret")
 )
 
 func NewAuthController(dao d.Dao, usersClient v1.UsersServiceClient) AuthController {
@@ -25,6 +25,7 @@ func NewAuthController(dao d.Dao, usersClient v1.UsersServiceClient) AuthControl
 		usersClient: usersClient,
 
 		jwtDuration: defaultJwtDuration,
+		hmacSecret:  defaultHMACSecret,
 	}
 }
 
@@ -38,6 +39,7 @@ type authController struct {
 	usersClient v1.UsersServiceClient
 
 	jwtDuration time.Duration
+	hmacSecret  []byte
 }
 
 func (c *authController) Login(ctx context.Context, uuid, password string) (jwt string, err error) {
@@ -70,11 +72,12 @@ func (c *authController) Login(ctx context.Context, uuid, password string) (jwt 
 func (c *authController) generateToken(ctx context.Context, user *v1.User) (tokenString string, err error) {
 	// generate a new JWT
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"uuid":      user.Uuid,
+		"uuid":      user.GetUuid(),
+		"email":     user.GetEmail(),
 		"expiresAt": time.Now().Add(c.jwtDuration).Unix(),
 	})
 
-	tokenString, err = token.SignedString(defaultHMACSecret)
+	tokenString, err = token.SignedString(c.hmacSecret)
 	if err != nil {
 		log.Println("failed to retrieve user: ", err.Error())
 		return
@@ -111,6 +114,8 @@ func (c *authController) CreateAccount(ctx context.Context, email, password stri
 	if err != nil {
 		return
 	}
+
+	// hashed+salted pwd into DB
 
 	// refresh?
 

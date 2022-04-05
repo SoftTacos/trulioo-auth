@@ -1,9 +1,16 @@
 package model
 
+import (
+	"time"
+)
+
 type User struct {
-	ID uint64
-	Email string
-	PhoneNumber string
-	FirstName string
-	LastName string
+	UUID      string
+	Email     string
+	CreatedAt *time.Time
+	UpdatedAt *time.Time
+	DeletedAt *time.Time
+	// PhoneNumber string
+	// FirstName   string
+	// LastName    string
 }

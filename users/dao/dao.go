@@ -2,20 +2,20 @@ package dao
 
 import (
 	"context"
+	"log"
 
 	gopg "github.com/go-pg/pg"
-	v1 "github.com/softtacos/trulioo-auth/grpc/users"
 	m "github.com/softtacos/trulioo-auth/users/model"
 )
 
 type UsersDao interface {
-	GetUsers(ctx context.Context,filters *v1.GetUsersRequest)(users []m.User,err error)
-	CreateUser(ctx context.Context, user m.User)(m.User, error)
+	GetUser(ctx context.Context, email string) (user m.User, err error)
+	CreateUser(ctx context.Context, user m.User) (m.User, error)
 }
 
-func NewUsersDao(db *gopg.DB)UsersDao{
+func NewUsersDao(db *gopg.DB) UsersDao {
 	return &usersDao{
-		db:db,
+		db: db,
 	}
 }
 
@@ -23,14 +23,18 @@ type usersDao struct {
 	db *gopg.DB
 }
 
-func (d *usersDao)GetUsers(ctx context.Context,filters *v1.GetUsersRequest)(users []m.User,err error){
-	if len(filters.Uuids) > 0 {
-
+func (d *usersDao) GetUser(ctx context.Context, email string) (user m.User, err error) {
+	err = d.db.Model(&user).Where("email = ?", email).Select()
+	if err != nil {
+		log.Println("failed to retrieve user: ", err)
 	}
 	return
 }
 
-func (d *usersDao)CreateUser(ctx context.Context,user m.User)(m.User, error){
-
-	return user,nil
+func (d *usersDao) CreateUser(ctx context.Context, user m.User) (m.User, error) {
+	_, err := d.db.Model(&user).Insert()
+	if err != nil {
+		log.Println("failed to create user: ", err)
+	}
+	return user, err
 }

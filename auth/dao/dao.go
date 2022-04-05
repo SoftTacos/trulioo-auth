@@ -14,11 +14,17 @@ func NewDao(db *gopg.DB) Dao {
 }
 
 type Dao interface {
+	CreatePassword(uuid string, passwordHash string) (err error)
 	GetPassword(uuid string) (passwordHash string, err error)
 }
 
 type dao struct {
 	db *gopg.DB
+}
+
+func (d *dao) CreatePassword(uuid string, passwordHash string) (err error) {
+	d.db.Model()
+	return
 }
 
 func (d *dao) GetPassword(uuid string) (passwordHash string, err error) {

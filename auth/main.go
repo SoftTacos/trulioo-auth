@@ -26,9 +26,14 @@ const (
 	defaultMaxPoolSize = 10
 )
 
-func main() {
+// using this to fake the envs that would normally be set in a chart
+// init gets called before anything else
+func init() {
 	os.Setenv("USERS_CLIENT_ADDRESS", ":11001")
 	os.Setenv("GRPC_PORT", "11001")
+}
+
+func main() {
 	grpcPort := os.Getenv(grpcPortEnv)
 
 	var db *gopg.DB

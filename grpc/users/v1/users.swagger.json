@@ -1,12 +1,12 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "auth/v1/auth.proto",
+    "title": "users/v1/users.proto",
     "version": "version not set"
   },
   "tags": [
     {
-      "name": "AuthService"
+      "name": "UsersService"
     }
   ],
   "consumes": [
@@ -17,22 +17,6 @@
   ],
   "paths": {},
   "definitions": {
-    "authLoginResponse": {
-      "type": "object",
-      "properties": {
-        "jwt": {
-          "type": "string"
-        }
-      }
-    },
-    "authSignupResponse": {
-      "type": "object",
-      "properties": {
-        "jwt": {
-          "type": "string"
-        }
-      }
-    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -57,6 +41,22 @@
           "items": {
             "$ref": "#/definitions/protobufAny"
           }
+        }
+      }
+    },
+    "usersCreateUserResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/usersUser"
+        }
+      }
+    },
+    "usersGetUserResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/usersUser"
         }
       }
     },
