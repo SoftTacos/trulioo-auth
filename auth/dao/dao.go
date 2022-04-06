@@ -45,18 +45,3 @@ func (d *authDao) CreatePassword(uuid string, passwordHash string) (err error) {
 	}
 	return
 }
-
-func (d *authDao) CreateRefreshToken(uuid string, passwordHash string) (err error) {
-	now := time.Now()
-	pw := password{
-		UserUuid:     uuid,
-		PasswordHash: passwordHash,
-		CreatedAt:    &now,
-	}
-
-	_, err = d.db.Model(&pw).Insert()
-	if err != nil {
-		log.Println("failed to create password: ", err)
-	}
-	return
-}
