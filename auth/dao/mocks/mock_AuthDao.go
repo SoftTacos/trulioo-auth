@@ -46,18 +46,3 @@ func (mr *MockAuthDaoMockRecorder) CreatePassword(arg0, arg1 interface{}) *gomoc
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreatePassword", reflect.TypeOf((*MockAuthDao)(nil).CreatePassword), arg0, arg1)
 }
-
-// GetPassword mocks base method.
-func (m *MockAuthDao) GetPassword(arg0 string) (string, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetPassword", arg0)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetPassword indicates an expected call of GetPassword.
-func (mr *MockAuthDaoMockRecorder) GetPassword(arg0 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPassword", reflect.TypeOf((*MockAuthDao)(nil).GetPassword), arg0)
-}

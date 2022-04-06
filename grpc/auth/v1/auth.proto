@@ -16,6 +16,7 @@ message LoginRequest {
   string password = 2;
 }
 
+// ideally the JWT should go in the grpc metadata but for simplicity/speed it can go here
 message LoginResponse {
   string jwt = 1;
 }
@@ -25,6 +26,7 @@ message SignupRequest {
   string password = 2;
 }
 
+// ideally the JWT should go in the grpc metadata but for simplicity/speed it can go here
 message SignupResponse {
   string jwt = 1;
 }

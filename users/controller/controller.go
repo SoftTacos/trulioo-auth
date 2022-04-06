@@ -2,7 +2,6 @@ package controller
 
 import (
 	"context"
-	"errors"
 	"log"
 	"regexp"
 	"time"
@@ -40,7 +39,7 @@ type usersController struct {
 func (c *usersController) GetUser(ctx context.Context, email string) (user m.User, err error) {
 	user, err = c.dao.GetUser(ctx, email)
 	if err != nil {
-		log.Println("failed to retrieve user:", err.Error())
+		log.Println("failed to retrieve user:", err)
 	}
 	return
 }
@@ -48,14 +47,14 @@ func (c *usersController) GetUser(ctx context.Context, email string) (user m.Use
 func (c *usersController) CreateUser(ctx context.Context, email string) (user m.User, err error) {
 	user = c.generateUser(email)
 
-	if err = c.validateUser(user); err != nil {
-		log.Println("invalid user: ", err.Error())
+	if err = c.validateNewUser(user); err != nil {
+		log.Println("invalid user: ", err)
 		return
 	}
 
 	_, err = c.dao.CreateUser(ctx, user)
 	if err != nil {
-		log.Println("failed to create user: ", err.Error())
+		log.Println("failed to create user: ", err)
 		return
 	}
 	return
@@ -71,13 +70,13 @@ func (c *usersController) generateUser(email string) (user m.User) {
 	return
 }
 
-func (c *usersController) validateUser(user m.User) (err error) {
+func (c *usersController) validateNewUser(user m.User) (err error) {
 	if user.Email == "" {
-		err = errors.New("no email provided")
+		err = errNoEmail
 	} else if len(user.Email) > maxEmailLength {
-		err = errors.New("email is longer than maximum email length of 320")
+		err = errEmailTooLong
 	} else if !emailRegex.MatchString(user.Email) {
-		err = errors.New("invalid email")
+		err = errInvalidAddress
 	}
 	return
 }

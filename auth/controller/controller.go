@@ -15,22 +15,20 @@ import (
 )
 
 const (
-	defaultJwtDuration = time.Hour * 12
+	defaultJwtDuration = time.Hour
 	minPasswordLength  = 8
 )
 
-var (
-	defaultHMACSecret = []byte("shhhhh it's a secret")
-)
-
-func NewAuthController(dao d.AuthDao, usersClient v1.UsersServiceClient) AuthController {
+func NewAuthController(secret []byte, dao d.AuthDao, usersClient v1.UsersServiceClient) AuthController {
 	return &authController{
 		dao:         dao,
 		usersClient: usersClient,
 
-		pwHasher:    pwHasher{},
+		pwHasher: pwHasher{},
+		tokenGenerator: &tokenGenerator{
+			secret: secret,
+		},
 		jwtDuration: defaultJwtDuration,
-		hmacSecret:  defaultHMACSecret,
 	}
 }
 
@@ -43,9 +41,9 @@ type authController struct {
 	dao         d.AuthDao
 	usersClient v1.UsersServiceClient
 
-	pwHasher    PasswordHasher // mocked the call to hash password for testability
-	jwtDuration time.Duration
-	hmacSecret  []byte
+	pwHasher       PasswordHasher // mocked the call to hash password for testability
+	tokenGenerator TokenGenerator // mocked the call to NewWithClaims for testability
+	jwtDuration    time.Duration
 }
 
 func (c *authController) Login(ctx context.Context, email, password string) (jwt string, err error) {
@@ -55,6 +53,21 @@ func (c *authController) Login(ctx context.Context, email, password string) (jwt
 		return
 	}
 
+	user, err := c.getUser(ctx, email)
+	if err != nil {
+		log.Println("failed to retrieve user: ", err)
+		return
+	}
+
+	jwt, err = c.generateToken(user)
+	if err != nil {
+		log.Println("failed to geenrate token: ", err)
+	}
+
+	return
+}
+
+func (c *authController) getUser(ctx context.Context, email string) (user *v1.User, err error) {
 	// check if the user exists
 	var getUserResponse *v1.GetUserResponse
 	getUserResponse, err = c.usersClient.GetUser(ctx, &v1.GetUserRequest{
@@ -62,16 +75,10 @@ func (c *authController) Login(ctx context.Context, email, password string) (jwt
 	})
 	if err != nil {
 		log.Println("failed to retrieve user: ", err)
-		return
+		err = errLoginFailure // don't show the true error, just tell them it failed.
+	} else {
+		user = getUserResponse.User
 	}
-
-	jwt, err = c.generateToken(ctx, getUserResponse.GetUser())
-	if err != nil {
-		return
-	}
-
-	// refresh?
-
 	return
 }
 
@@ -84,15 +91,14 @@ func (c *authController) CreateAccount(ctx context.Context, email, password stri
 
 	user, err := c.createAccount(ctx, email, password)
 	if err != nil {
+		log.Println("failed to create an account: ", err)
 		return
 	}
 
-	jwt, err = c.generateToken(ctx, user)
+	jwt, err = c.generateToken(user)
 	if err != nil {
-		return
+		log.Println("failed to generate token: ", err)
 	}
-
-	// refresh?
 
 	return
 }
@@ -122,22 +128,22 @@ func (c *authController) createAccount(ctx context.Context, email, password stri
 	return
 }
 
-func (c *authController) generateToken(ctx context.Context, user *v1.User) (tokenString string, err error) {
-	// generate a new JWT
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+func (c *authController) generateToken(user *v1.User) (tokenString string, err error) {
+	claims := jwt.MapClaims{
 		"uuid":      user.GetUuid(),
 		"email":     user.GetEmail(),
 		"expiresAt": time.Now().Add(c.jwtDuration).Unix(),
-	})
+	}
 
-	tokenString, err = token.SignedString(c.hmacSecret)
+	// tokenString, err = c.tokenGenerator.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(c.secret)
+	tokenString, err = c.tokenGenerator.Generate(jwt.SigningMethodHS256, claims)
 	if err != nil {
 		log.Println("failed to retrieve user: ", err)
-		return
 	}
 	return
 }
 
+// more robust validation of the email happens on the users service, however we want to make sure the fields were even provided
 func (c *authController) validateLogin(email, password string) (err error) {
 	if email == "" {
 		err = errors.New("no email provided")

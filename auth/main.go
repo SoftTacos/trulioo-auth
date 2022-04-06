@@ -12,17 +12,19 @@ import (
 )
 
 const (
-	usersUrlEnv = "USERS_CLIENT_ADDRESS"
-	dbUrlEnv    = "DB_URL"
-	grpcPortEnv = "GRPC_PORT"
+	usersUrlEnv  = "USERS_CLIENT_ADDRESS"
+	dbUrlEnv     = "DB_URL"
+	grpcPortEnv  = "GRPC_PORT"
+	jwtSecretEnv = "JWT_SECRET"
 )
 
 // using this to fake the envs that would normally be set in a chart
 // init gets called before anything else
 func init() {
-	os.Setenv("DB_URL", "postgres://postgres:postgres@localhost/tl_auth?sslmode=disable")
-	os.Setenv("USERS_CLIENT_ADDRESS", ":11001")
-	os.Setenv("GRPC_PORT", "11000")
+	os.Setenv(dbUrlEnv, "postgres://postgres:postgres@localhost/tl_auth?sslmode=disable")
+	os.Setenv(usersUrlEnv, ":11001")
+	os.Setenv(grpcPortEnv, "11000")
+	os.Setenv(jwtSecretEnv, "shhhh it's a secret!")
 }
 
 func main() {
@@ -39,7 +41,7 @@ func main() {
 			usersClient = uv1.NewUsersServiceClient(usersClientConn)
 		},
 		ServiceSetup: func(m *sm.ServiceManager) {
-			controller = c.NewAuthController(dao, usersClient)
+			controller = c.NewAuthController([]byte(os.Getenv(jwtSecretEnv)), dao, usersClient)
 			handler = h.NewAuthHandler(controller)
 			v1.RegisterAuthServiceServer(m.CreateGrpcServer(os.Getenv(grpcPortEnv)), handler)
 		},

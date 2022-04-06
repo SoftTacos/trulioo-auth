@@ -3,11 +3,12 @@ package controller
 import (
 	"context"
 	"errors"
+	"fmt"
+	"reflect"
 	"testing"
 	"time"
 
-	"golang.org/x/crypto/bcrypt"
-
+	"github.com/golang-jwt/jwt"
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	mockCtrl "github.com/softtacos/trulioo-auth/auth/controller/mocks"
@@ -16,13 +17,13 @@ import (
 	v1mock "github.com/softtacos/trulioo-auth/grpc/users/v1/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func Test_authController_createAccount(t *testing.T) {
 	var (
 		testError   = errors.New("failed to do a thing")
 		jwtDuration = time.Hour
-		hmacSecret  = []byte("big ole secret")
 	)
 	type args struct {
 		ctx      context.Context
@@ -104,7 +105,6 @@ func Test_authController_createAccount(t *testing.T) {
 				usersClient: usersClient,
 				pwHasher:    pwHasher,
 				jwtDuration: jwtDuration,
-				hmacSecret:  hmacSecret,
 			}
 
 			usersClient.EXPECT().CreateUser(tt.args.ctx, &v1.CreateUserRequest{
@@ -126,4 +126,95 @@ func Test_authController_createAccount(t *testing.T) {
 			assert.Equal(t, tt.createUserResponse.User, gotUser, "user does not match")
 		})
 	}
+}
+
+func Test_authController_generateToken(t *testing.T) {
+	tests := []struct {
+		name           string
+		user           *v1.User
+		generateResult string
+		generateErr    error
+		wantErr        error
+	}{
+		{
+			name: "happy",
+			user: &v1.User{
+				Uuid:  "definitely a uuid!",
+				Email: "def an email",
+			},
+			generateResult: "big ole JWT token string",
+			generateErr:    nil,
+			wantErr:        nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			tokenGenerator := mockCtrl.NewMockTokenGenerator(ctrl)
+			c := &authController{
+				jwtDuration:    time.Hour,
+				tokenGenerator: tokenGenerator,
+			}
+			matcher := gomock.Matcher(ClaimsMatcher{
+				timeTolerance: time.Second,
+				claims: jwt.MapClaims{
+					"uuid":      tt.user.Uuid,
+					"email":     tt.user.Email,
+					"expiresAt": time.Now().Add(c.jwtDuration).Unix(),
+				},
+			})
+			tokenGenerator.EXPECT().Generate(jwt.SigningMethodHS256, matcher).Return(tt.generateResult, tt.generateErr)
+
+			gotTokenString, err := c.generateToken(tt.user)
+
+			if tt.wantErr != nil {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.generateResult, gotTokenString)
+		})
+	}
+}
+
+type ClaimsMatcher struct {
+	timeTolerance time.Duration
+	claims        jwt.MapClaims // this is just a map[string]interface{}
+}
+
+func (m ClaimsMatcher) String() string {
+	return fmt.Sprintf("matches claims: %v", m.claims)
+}
+
+func (m ClaimsMatcher) Matches(arg interface{}) (matches bool) {
+	actualClaims, ok := arg.(jwt.MapClaims)
+	if !ok {
+		return
+	}
+
+	// get each key and value in the actual claims passed in
+	for actualKey, actualValue := range actualClaims {
+		// check if the keys supplied exist in the expected claims map
+		if expectedValue, exists := m.claims[actualKey]; !exists {
+			return
+		} else { // if both maps do have the same keys
+			actualTime, ok := actualValue.(time.Time)
+			if ok {
+				expectedTime := expectedValue.(time.Time)
+				diff := actualTime.Sub(expectedTime)
+				if diff < 0 {
+					diff = diff * -1
+				}
+				if diff > m.timeTolerance {
+					return
+				}
+				continue
+			}
+			if !reflect.DeepEqual(expectedValue, actualValue) {
+				return
+			}
+		}
+	}
+
+	return true
 }
